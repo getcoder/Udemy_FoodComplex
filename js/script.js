@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Tabs
   const tabs = document.querySelectorAll(".tabheader__item"),
     tabsContent = document.querySelectorAll(".tabcontent"),
     tabsParent = document.querySelector(".tabheader__items");
@@ -38,6 +39,91 @@ document.addEventListener("DOMContentLoaded", () => {
 
   hideTabContent();
   showTabContent();
+
+  // Timer
+  const today = new Date();
+  const promoDate = today.getTime() + 95000;
+
+  const months = [
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря",
+  ];
+
+  function setPromotionDescription(t) {
+    const descr = document.querySelector(".promotion__descr"),
+      date = new Date(t);
+
+    descr.childNodes[5].textContent = `Акция закончится ${date.getDate()} ${
+      months[date.getMonth()]
+    } в ${getZero(date.getHours())}:${getZero(date.getMinutes())}`;
+  }
+
+  setPromotionDescription(promoDate);
+
+  function getTimeRemaining(t) {
+    const diffTime = t - new Date();
+
+    const date = Math.round(diffTime / (1000 * 60 * 60 * 24)),
+      hours = Math.round((diffTime / (1000 * 60 * 60)) % 24),
+      minuts = Math.round((diffTime / 1000 / 60) % 60),
+      seconds = Math.round((diffTime / 1000) % 60);
+
+    // const date = new Date(diffTime).getDate(),
+    //   hours = new Date(diffTime).getHours(),
+    //   minuts = new Date(diffTime).getMinutes(),
+    //   seconds = new Date(diffTime).getSeconds();
+
+    return {
+      total: diffTime,
+      days: date,
+      hours: hours,
+      minuts: minuts,
+      seconds: seconds,
+    };
+  }
+
+  function startTimer(t) {
+    const days = document.querySelector("#days"),
+      hours = document.querySelector("#hours"),
+      minutes = document.querySelector("#minutes"),
+      seconds = document.querySelector("#seconds"),
+      timeInterval = setInterval(updateClock, 1000);
+
+    updateClock();
+
+    function updateClock() {
+      const promoEndTime = getTimeRemaining(t);
+
+      days.textContent = getZero(promoEndTime.days);
+      hours.textContent = getZero(promoEndTime.hours);
+      minutes.textContent = getZero(promoEndTime.minuts);
+      seconds.textContent = getZero(promoEndTime.seconds);
+
+      if (promoEndTime.total <= 0) {
+        clearInterval(timeInterval);
+      }
+    }
+  }
+
+  function getZero(num) {
+    if (num >= 0 && num < 10) {
+      return `0${num}`;
+    } else {
+      return num;
+    }
+  }
+
+  startTimer(promoDate);
 
   console.log();
 });

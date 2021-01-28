@@ -201,12 +201,6 @@ a {
   font-size: 22px;
   font-weight: 700;
 }
-.show {
-  display: block;
-}
-.hide {
-  display: none;
-}
 .fade {
   animation-name: fade;
   animation-duration: 1.2s;
@@ -622,4 +616,13 @@ a {
   display: block;
   width: 280px;
   margin: 0 auto;
+}
+.bam {
+  display: block;
+}
+.show {
+  display: block;
+}
+.hide {
+  display: none;
 }

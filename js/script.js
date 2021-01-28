@@ -125,5 +125,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   startTimer(promoDate);
 
+  // Modal
+  const modalBtns = document.querySelectorAll("[data-modal]"),
+    modal = document.querySelector(".modal"),
+    modalClose = document.querySelector("[data-close]");
+
+  modalBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // modal.classList.add("show");
+      // modal.classList.remove("hide");
+      modal.classList.toggle("show");
+      // modal.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  function closeModal() {
+    modal.classList.toggle("show");
+    document.body.style.overflow = "visible";
+  }
+
+  modalClose.addEventListener("click", closeModal);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      // modal.classList.toggle("show");
+      // document.body.style.overflow = "visible";
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    // console.log(e);
+    if (e.key === "Escape" && modal.classList.contains("show")) {
+      closeModal();
+    }
+  });
+
   console.log();
 });

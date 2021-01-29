@@ -42,7 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Timer
   const today = new Date();
-  const promoDate = today.getTime() + 95000;
+  // const promoDate = new Date("2021-01-29T19:35:00");
+  const promoDate = today.getTime() + 95100;
 
   const months = [
     "января",
@@ -104,14 +105,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateClock() {
       const promoEndTime = getTimeRemaining(t);
 
+      if (promoEndTime.total <= 0) {
+        clearInterval(timeInterval);
+        return;
+      }
+
       days.textContent = getZero(promoEndTime.days);
       hours.textContent = getZero(promoEndTime.hours);
       minutes.textContent = getZero(promoEndTime.minuts);
       seconds.textContent = getZero(promoEndTime.seconds);
-
-      if (promoEndTime.total <= 0) {
-        clearInterval(timeInterval);
-      }
     }
   }
 
@@ -168,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const modalTimerId = setTimeout(showModal, 5000);
+  // const modalTimerId = setTimeout(showModal, 5000);
 
   const doc = document.documentElement;
 

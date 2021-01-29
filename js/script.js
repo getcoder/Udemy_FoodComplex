@@ -73,10 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function getTimeRemaining(t) {
     const diffTime = t - new Date();
 
-    const date = Math.round(diffTime / (1000 * 60 * 60 * 24)),
-      hours = Math.round((diffTime / (1000 * 60 * 60)) % 24),
-      minuts = Math.round((diffTime / 1000 / 60) % 60),
-      seconds = Math.round((diffTime / 1000) % 60);
+    const date = Math.floor(diffTime / (1000 * 60 * 60 * 24)),
+      hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24),
+      minuts = Math.floor((diffTime / 1000 / 60) % 60),
+      seconds = Math.floor((diffTime / 1000) % 60);
 
     // const date = new Date(diffTime).getDate(),
     //   hours = new Date(diffTime).getHours(),
@@ -134,12 +134,18 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       // modal.classList.add("show");
       // modal.classList.remove("hide");
-      modal.classList.toggle("show");
-      // modal.style.display = "block";
-      document.body.style.overflow = "hidden";
+      // modal.classList.toggle("show");
+      // // modal.style.display = "block";
+      // document.body.style.overflow = "hidden";
+      showModal();
     });
   });
 
+  function showModal() {
+    modal.classList.toggle("show");
+    document.body.style.overflow = "hidden";
+    clearInterval(modalTimerId);
+  }
   function closeModal() {
     modal.classList.toggle("show");
     document.body.style.overflow = "visible";
@@ -161,6 +167,19 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }
   });
+
+  const modalTimerId = setTimeout(showModal, 5000);
+
+  const doc = document.documentElement;
+
+  function showModalOnBottom() {
+    if (doc.scrollTop + doc.clientHeight >= doc.scrollHeight) {
+      showModal();
+      window.removeEventListener("scroll", showModalOnBottom);
+    }
+  }
+
+  window.addEventListener("scroll", showModalOnBottom);
 
   console.log();
 });

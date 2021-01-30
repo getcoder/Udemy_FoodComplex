@@ -130,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modal
   const modalBtns = document.querySelectorAll("[data-modal]"),
     modal = document.querySelector(".modal"),
-    modalClose = document.querySelector("[data-close]");
+    modalClose = document.querySelector("[data-close]"),
+    modalContent = document.querySelector(".modal__content");
 
   modalBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -146,9 +147,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function showModal() {
     modal.classList.toggle("show");
     document.body.style.overflow = "hidden";
-    clearInterval(modalTimerId);
+
+    document.body.style.paddingRight =
+      modalContent.offsetWidth - modalContent.clientWidth + "px";
+      
+    if (modalTimerId) {
+      clearInterval(modalTimerId);
+    }
   }
+
   function closeModal() {
+    document.body.style.paddingRight = "";
     modal.classList.toggle("show");
     document.body.style.overflow = "visible";
   }
@@ -170,12 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // const modalTimerId = setTimeout(showModal, 5000);
+  let modalTimerId;
+  modalTimerId = setTimeout(showModal, 5000);
 
   const doc = document.documentElement;
 
   function showModalOnBottom() {
-    if (doc.scrollTop + doc.clientHeight >= doc.scrollHeight) {
+    let scrollBottom = doc.scrollHeight - doc.scrollTop - doc.clientHeight;
+    if (scrollBottom < 1) {
       showModal();
       window.removeEventListener("scroll", showModalOnBottom);
     }

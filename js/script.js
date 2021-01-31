@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   // const promoDate = new Date("2021-01-29T19:35:00");
   const promoDate = today.getTime() + 95100;
+  // const promoDate = "2020-03-17";
 
   const months = [
     "января",
@@ -100,10 +101,23 @@ document.addEventListener("DOMContentLoaded", () => {
       seconds = document.querySelector("#seconds"),
       timeInterval = setInterval(updateClock, 1000);
 
+    const date = new Date(t);
+
+    if (date.getTime() - new Date() < 0) {
+      updateClock(1);
+      return;
+    }
+
     updateClock();
 
-    function updateClock() {
-      const promoEndTime = getTimeRemaining(t);
+    function updateClock(off = 0) {
+      if (off) {
+        days.textContent = "00";
+        hours.textContent = "00";
+        minutes.textContent = "00";
+        seconds.textContent = "00";
+      }
+      const promoEndTime = getTimeRemaining(date);
 
       if (promoEndTime.total <= 0) {
         clearInterval(timeInterval);
@@ -150,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.style.paddingRight =
       modalContent.offsetWidth - modalContent.clientWidth + "px";
-      
+
     if (modalTimerId) {
       clearInterval(modalTimerId);
     }
@@ -193,6 +207,77 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("scroll", showModalOnBottom);
+
+  // Menu cards with class
+
+  class MenuCard {
+    constructor(card, parentSelector) {
+      (this.img = card.img),
+        (this.alt = card.alt),
+        (this.title = card.title),
+        (this.text = card.text),
+        (this.price = card.price),
+        (this.transfer = 27);
+      this.parentSelector = parentSelector;
+    }
+
+    changeToUA() {
+      this.price = this.price * this.transfer;
+    }
+
+    makeCard() {
+      this.changeToUA();
+      let div = document.createElement("div");
+      div.classList.add("menu__item");
+      div.innerHTML = `
+      <img src="${this.img}" alt=${this.alt}>
+      <h3 class="menu__item-subtitle">${this.title}</h3>
+      <div class="menu__item-descr">${this.text}</div>
+      <div class="menu__item-divider"></div>
+      <div class="menu__item-price">
+          <div class="menu__item-cost">Цена:</div>
+          <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+      </div>`;
+      this.parentSelector.append(div);
+      // return div;
+    }
+  }
+
+  cardVegy = {
+    img: "img/tabs/vegy.jpg",
+    alt: "vegy",
+    title: 'Меню "Фитнес"',
+    text:
+      "Меню 'Фитнес' - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
+    price: 9,
+  };
+
+  cardElite = {
+    img: "img/tabs/elite.jpg",
+    alt: "elite",
+    title: "Меню “Премиум”",
+    text:
+      "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
+    price: 21,
+  };
+
+  cardPost = {
+    img: "img/tabs/post.jpg",
+    alt: "post",
+    title: 'Меню "Постное"',
+    text:
+      "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
+    price: 14,
+  };
+
+  const cards = document.querySelector(".menu__field .container");
+
+  const newCard = new MenuCard(cardVegy, cards);
+  newCard.makeCard();
+
+  new MenuCard(cardElite, cards).makeCard();
+
+  new MenuCard(cardPost, cards).makeCard();
 
   console.log();
 });

@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Menu cards with class
 
   class MenuCard {
-    constructor(card, parentSelector) {
+    constructor(card, parentSelector, ...classes) {
       (this.img = card.img),
         (this.alt = card.alt),
         (this.title = card.title),
@@ -219,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
         (this.price = card.price),
         (this.transfer = 27);
       this.parentSelector = parentSelector;
+      this.classes = classes;
     }
 
     changeToUA() {
@@ -228,7 +229,15 @@ document.addEventListener("DOMContentLoaded", () => {
     makeCard() {
       this.changeToUA();
       let div = document.createElement("div");
-      div.classList.add("menu__item");
+      // div.classList.add("menu__item");
+
+      if (this.classes.length === 0) {
+        this.classes = "menu__item";
+        div.classList.add(this.classes);
+      } else {
+        this.classes.forEach((className) => div.classList.add(className));
+      }
+
       div.innerHTML = `
       <img src="${this.img}" alt=${this.alt}>
       <h3 class="menu__item-subtitle">${this.title}</h3>
@@ -272,12 +281,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const cards = document.querySelector(".menu__field .container");
 
-  const newCard = new MenuCard(cardVegy, cards);
+  const newCard = new MenuCard(cardVegy, cards, "menu__item", "big");
   newCard.makeCard();
 
-  new MenuCard(cardElite, cards).makeCard();
+  new MenuCard(cardElite, cards, "menu__item").makeCard();
 
   new MenuCard(cardPost, cards).makeCard();
+
+  // Forms
+
+  const forms = document.querySelectorAll("form");
+
+  const messages = {
+    loading: "Загрузка",
+    success: "Спасибо! Скоро мы с вами свяжемся",
+    failure: "Что-то пошло не так...",
+  };
+
+  forms.forEach((formItem) => postData(formItem));
+
+  function postData(form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const statusMessage = document.createElement("div");
+      statusMessage.classList.add("status");
+      statusMessage.textContent = messages.loading;
+      form.append(statusMessage);
+
+      const request = new XMLHttpRequest();
+      request.open("POST", "server.php");
+
+      // Первый вариант без JSON:
+      // request.setRequestHeader("Content-type", "multipart/form-data"); // в связке XMLHttpRequest и POST заголовки устанавливать не нужно
+      //  const formData = new FormData(form);
+      // request.send(formData);
+
+      // Второй вариант с JSON:
+      request.setRequestHeader("Content-type", "application/json");
+
+      const formData = new FormData(form);
+
+      const obj = {};
+      formData.forEach((value, key) => {
+        obj[key] = value;
+      });
+      // console.log(obj);
+      const json = JSON.stringify(obj);
+
+      request.send(json);
+
+      request.addEventListener("load", () => {
+        if (request.status >= 200 && request.status < 300) {
+          console.log(request.response);
+          statusMessage.textContent = messages.success;
+          form.reset();
+          setTimeout(() => {
+            statusMessage.remove();
+          }, 2000);
+        } else {
+          statusMessage.textContent = messages.failure;
+        }
+      });
+    });
+  }
 
   console.log();
 });

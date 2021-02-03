@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modal
   const modalBtns = document.querySelectorAll("[data-modal]"),
     modal = document.querySelector(".modal"),
-    modalClose = document.querySelector("[data-close]"),
+    // modalClose = document.querySelector("[data-close]"),
     modalContent = document.querySelector(".modal__content");
 
   modalBtns.forEach((btn) => {
@@ -161,9 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function showModal() {
     modal.classList.toggle("show");
     document.body.style.overflow = "hidden";
-
-    document.body.style.paddingRight =
-      modalContent.offsetWidth - modalContent.clientWidth + "px";
+    hideScroll();
+    // window.innerWidth - document.documentElement.offsetWidth + "px";
 
     if (modalTimerId) {
       clearInterval(modalTimerId);
@@ -171,15 +170,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function closeModal() {
-    document.body.style.paddingRight = "";
     modal.classList.toggle("show");
+    showScroll();
+  }
+
+  function hideScroll() {
+    const div = document.createElement("div");
+    div.style.cssText = `
+    overflow: scroll;
+    width: 50px;
+    height: 50px;
+    `;
+    document.body.append(div);
+
+    document.body.style.paddingRight = div.offsetWidth - div.clientWidth + "px";
+
+    div.remove();
+  }
+
+  function showScroll() {
+    document.body.style.paddingRight = "";
     document.body.style.overflow = "visible";
   }
 
-  modalClose.addEventListener("click", closeModal);
+  // modalClose.addEventListener("click", closeModal);
 
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
+    // console.dir(e.target);
+    if (e.target === modal || e.target.getAttribute("data-close") == "") {
       // modal.classList.toggle("show");
       // document.body.style.overflow = "visible";
       closeModal();
@@ -293,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const forms = document.querySelectorAll("form");
 
   const messages = {
-    loading: "Загрузка",
+    loading: "img/form/spinner.svg",
     success: "Спасибо! Скоро мы с вами свяжемся",
     failure: "Что-то пошло не так...",
   };
@@ -304,10 +322,14 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const statusMessage = document.createElement("div");
-      statusMessage.classList.add("status");
-      statusMessage.textContent = messages.loading;
-      form.append(statusMessage);
+      const statusMessage = document.createElement("img");
+      statusMessage.src = messages.loading;
+      statusMessage.style.cssText = `
+        display: block;
+        margin: 0 auto;
+      `;
+      // form.append(statusMessage);
+      form.insertAdjacentElement('afterend',statusMessage)
 
       const request = new XMLHttpRequest();
       request.open("POST", "server.php");
@@ -334,16 +356,44 @@ document.addEventListener("DOMContentLoaded", () => {
       request.addEventListener("load", () => {
         if (request.status >= 200 && request.status < 300) {
           console.log(request.response);
-          statusMessage.textContent = messages.success;
+          // statusMessage.textContent = messages.success;
+          showThanksModal(messages.success);
           form.reset();
-          setTimeout(() => {
-            statusMessage.remove();
-          }, 2000);
+          statusMessage.remove();
         } else {
-          statusMessage.textContent = messages.failure;
+          // statusMessage.textContent = messages.failure;
+          showThanksModal(messages.failure);
         }
       });
     });
+  }
+
+  function showThanksModal(msg) {
+    const prevModalDialog = document.querySelector(".modal__dialog");
+    prevModalDialog.classList.add("hide");
+
+    showModal();
+    modal.classList.add("show"); // класс использует toggle, поэтому при открытии окна show добавляется, а при отправке снимается. Добавляем принудительно
+
+    const newModal = document.createElement("div");
+    newModal.classList.add("modal__dialog");
+    newModal.innerHTML = `
+    <div class="modal__content">
+        <div data-close class="modal__close">&times;</div>
+        <div class="modal__title">${msg}</div>
+    </div>
+    `;
+
+    modal.append(newModal);
+
+    setTimeout(() => {
+      newModal.remove();
+      // prevModalDialog.classList.add("show");
+      prevModalDialog.classList.remove("hide");
+      // modal.classList.add("hide");
+      closeModal();
+      modal.classList.remove("show"); // если закрыть окно до истечения 4сек, то из-за toggle класс show добавляется на предыдущем шаге, поэтому удаляем его принудительно
+    }, 4000);
   }
 
   console.log();

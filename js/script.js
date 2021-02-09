@@ -329,18 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
         margin: 0 auto;
       `;
       // form.append(statusMessage);
-      form.insertAdjacentElement('afterend',statusMessage)
-
-      const request = new XMLHttpRequest();
-      request.open("POST", "server.php");
-
-      // Первый вариант без JSON:
-      // request.setRequestHeader("Content-type", "multipart/form-data"); // в связке XMLHttpRequest и POST заголовки устанавливать не нужно
-      //  const formData = new FormData(form);
-      // request.send(formData);
-
-      // Второй вариант с JSON:
-      request.setRequestHeader("Content-type", "application/json");
+      form.insertAdjacentElement("afterend", statusMessage);
 
       const formData = new FormData(form);
 
@@ -349,22 +338,24 @@ document.addEventListener("DOMContentLoaded", () => {
         obj[key] = value;
       });
       // console.log(obj);
-      const json = JSON.stringify(obj);
 
-      request.send(json);
-
-      request.addEventListener("load", () => {
-        if (request.status >= 200 && request.status < 300) {
-          console.log(request.response);
-          // statusMessage.textContent = messages.success;
+      fetch("server.php", {
+        method: "POST",
+        body: JSON.stringify(obj),
+        headers: { "Content-type": "application/json" },
+      })
+        .then((data) => data.text())
+        .then((request) => {
+          console.log(request);
           showThanksModal(messages.success);
-          form.reset();
           statusMessage.remove();
-        } else {
-          // statusMessage.textContent = messages.failure;
+        })
+        .catch(() => {
           showThanksModal(messages.failure);
-        }
-      });
+        })
+        .finally(() => {
+          form.reset();
+        });
     });
   }
 

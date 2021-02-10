@@ -231,9 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
   class MenuCard {
     constructor(card, parentSelector, ...classes) {
       (this.img = card.img),
-        (this.alt = card.alt),
+        (this.altimg = card.altimg),
         (this.title = card.title),
-        (this.text = card.text),
+        (this.descr = card.descr),
         (this.price = card.price),
         (this.transfer = 27);
       this.parentSelector = parentSelector;
@@ -257,9 +257,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       div.innerHTML = `
-      <img src="${this.img}" alt=${this.alt}>
+      <img src="${this.img}" alt=${this.altimg}>
       <h3 class="menu__item-subtitle">${this.title}</h3>
-      <div class="menu__item-descr">${this.text}</div>
+      <div class="menu__item-descr">${this.descr}</div>
       <div class="menu__item-divider"></div>
       <div class="menu__item-price">
           <div class="menu__item-cost">Цена:</div>
@@ -270,41 +270,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  cardVegy = {
-    img: "img/tabs/vegy.jpg",
-    alt: "vegy",
-    title: 'Меню "Фитнес"',
-    text:
-      "Меню 'Фитнес' - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
-    price: 9,
-  };
-
-  cardElite = {
-    img: "img/tabs/elite.jpg",
-    alt: "elite",
-    title: "Меню “Премиум”",
-    text:
-      "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-    price: 21,
-  };
-
-  cardPost = {
-    img: "img/tabs/post.jpg",
-    alt: "post",
-    title: 'Меню "Постное"',
-    text:
-      "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-    price: 14,
-  };
-
   const cards = document.querySelector(".menu__field .container");
 
-  const newCard = new MenuCard(cardVegy, cards, "menu__item", "big");
-  newCard.makeCard();
+  async function getResourse(url) {
+    const res = await fetch(url);
 
-  new MenuCard(cardElite, cards, "menu__item").makeCard();
+    if (!res.ok) {
+      throw new Error(`Could not fetch, status: ${res.status}`);
+    }
 
-  new MenuCard(cardPost, cards).makeCard();
+    return await res.json();
+  }
+
+  getResourse("http://localhost:3000/menu").then((data) => {
+    data.forEach((item) => new MenuCard(item, cards).makeCard());
+  });
 
   // Forms
 
@@ -316,9 +296,19 @@ document.addEventListener("DOMContentLoaded", () => {
     failure: "Что-то пошло не так...",
   };
 
-  forms.forEach((formItem) => postData(formItem));
+  forms.forEach((formItem) => bindPostData(formItem));
 
-  function postData(form) {
+  async function postData(url, data) {
+    const res = await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: { "Content-type": "application/json" },
+    });
+
+    return await res.json();
+  }
+
+  function bindPostData(form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -339,12 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       // console.log(obj);
 
-      fetch("server.php", {
-        method: "POST",
-        body: JSON.stringify(obj),
-        headers: { "Content-type": "application/json" },
-      })
-        .then((data) => data.text())
+      postData("http://localhost:3000/requests", JSON.stringify(obj))
         .then((request) => {
           console.log(request);
           showThanksModal(messages.success);

@@ -1,4 +1,4 @@
-function calc() {
+export function calc() {
   // Calculator
 
   const calcResult = document.querySelector(".calculating__result span"),
@@ -125,5 +125,3 @@ function calc() {
     }
   }
 }
-
-module.exports = calc;

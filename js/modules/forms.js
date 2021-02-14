@@ -1,7 +1,11 @@
-function forms() {
+import { closeModal, showModal } from "./modal";
+import { postData } from "../services/services";
+
+export function forms(modalSelector, modalTimerId) {
   // Forms
 
-  const forms = document.querySelectorAll("form");
+  const forms = document.querySelectorAll("form"),
+    modal = document.querySelector(modalSelector);
 
   const messages = {
     loading: "img/form/spinner.svg",
@@ -10,16 +14,6 @@ function forms() {
   };
 
   forms.forEach((formItem) => bindPostData(formItem));
-
-  async function postData(url, data) {
-    const res = await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: { "Content-type": "application/json" },
-    });
-
-    return await res.json();
-  }
 
   function bindPostData(form) {
     form.addEventListener("submit", (e) => {
@@ -62,16 +56,16 @@ function forms() {
     const prevModalDialog = document.querySelector(".modal__dialog");
     prevModalDialog.classList.add("hide");
 
-    showModal();
+    showModal(modalSelector, modalTimerId);
     modal.classList.add("show"); // класс использует toggle, поэтому при открытии окна show добавляется, а при отправке снимается. Добавляем принудительно
 
     const newModal = document.createElement("div");
     newModal.classList.add("modal__dialog");
     newModal.innerHTML = `
-    <div class="modal__content">
+      <div class="modal__content">
         <div data-close class="modal__close">&times;</div>
         <div class="modal__title">${msg}</div>
-    </div>
+      </div>
     `;
 
     modal.append(newModal);
@@ -81,10 +75,8 @@ function forms() {
       // prevModalDialog.classList.add("show");
       prevModalDialog.classList.remove("hide");
       // modal.classList.add("hide");
-      closeModal();
+      closeModal(modalSelector);
       modal.classList.remove("show"); // если закрыть окно до истечения 4сек, то из-за toggle класс show добавляется на предыдущем шаге, поэтому удаляем его принудительно
     }, 4000);
   }
 }
-
-module.exports = forms;

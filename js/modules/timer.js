@@ -1,8 +1,8 @@
-function timer() {
+function timer(promoDate) {
   // Timer
   const today = new Date();
   // const promoDate = new Date("2021-01-29T19:35:00");
-  const promoDate = today.getTime() + 95100;
+  // const promoDate = today.getTime() + 95100;
   // const promoDate = "2020-03-17";
 
   const months = [
@@ -101,4 +101,4 @@ function timer() {
   startTimer(promoDate);
 }
 
-module.exports = timer;
+export default timer;

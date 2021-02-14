@@ -1,17 +1,25 @@
-function slider() {
+export function slider({
+  container,
+  slide,
+  nextArrow,
+  prevArrow,
+  totalCounter,
+  currentCounter,
+  wrapper,
+  field,
+}) {
   // Slider
-
-  const sliderImages = document.querySelectorAll(".offer__slide");
 
   let slideIndex = 0;
 
-  const nextSlide = document.querySelector(".offer__slider-next"),
-    prevSlide = document.querySelector(".offer__slider-prev"),
-    total = document.querySelector("#total"),
-    current = document.querySelector("#current"),
-    slidesWraper = document.querySelector(".offer__slider-wrapper"),
-    slidesField = document.querySelector(".offer__slider-inner"),
-    slider = document.querySelector(".offer__slider"),
+  const nextSlide = document.querySelector(nextArrow),
+    prevSlide = document.querySelector(prevArrow),
+    sliderImages = document.querySelectorAll(slide),
+    total = document.querySelector(totalCounter),
+    current = document.querySelector(currentCounter),
+    slidesWraper = document.querySelector(wrapper),
+    slidesField = document.querySelector(field),
+    slider = document.querySelector(container),
     slidesWidth = window.getComputedStyle(slidesWraper).width;
 
   let offset = 0;
@@ -54,19 +62,19 @@ function slider() {
     const dot = document.createElement("li");
     dot.setAttribute("data-slide-to", i + 1);
     dot.style.cssText = `
-    box-sizing: content-box;
-    flex: 0 1 auto;
-    width: 30px;
-    height: 6px;
-    margin-right: 3px;
-    margin-left: 3px;
-    cursor: pointer;
-    background-color: #fff;
-    background-clip: padding-box;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    opacity: .5;
-    transition: opacity .6s ease;
+      box-sizing: content-box;
+      flex: 0 1 auto;
+      width: 30px;
+      height: 6px;
+      margin-right: 3px;
+      margin-left: 3px;
+      cursor: pointer;
+      background-color: #fff;
+      background-clip: padding-box;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      opacity: .5;
+      transition: opacity .6s ease;
     `;
 
     if (i == slideIndex) {
@@ -123,5 +131,3 @@ function slider() {
     }
   });
 }
-
-module.exports = slider;
